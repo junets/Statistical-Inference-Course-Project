@@ -41,11 +41,11 @@ p2 <- p2 + ylab("Tooth Length [mm]")
 p2
 
 # test1
-t.test(len~supp,data=ToothGrowth)
+t.test(len~supp,paired=FALSE, var.equal=FALSE,data=ToothGrowth)
 # test2
-t.test(len~supp,data=dose05)
+t.test(len~supp,paired=FALSE, var.equal=FALSE,data=dose05)
 #Test 3
-t.test(len~supp,data=dose10)
+t.test(len~supp,paired=FALSE, var.equal=FALSE,data=dose10)
 #Test 4
-t.test(len~supp,data=dose20)
+t.test(len~supp,paired=FALSE, var.equal=FALSE,data=dose20)
 
