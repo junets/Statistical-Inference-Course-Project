@@ -12,8 +12,11 @@ rexp(n, lambda)
 sim_exp <- replicate(sims, rexp(n, lambda))  #40*1000 matrix
 
 means_exp <- apply(sim_exp, 2, mean) #  mean of 40 numbers in 1000 times
+var_exp <- apply(sim_exp, 2, var)
 range(means_exp)
+range(var_exp)
 hist(means_exp, breaks=40, xlim = c(2,8), main="Means of Exponential Function Simulation", col = "orange")
+hist(var_exp, breaks=40, xlim = c(5,82), main="Varance of Exponential Function Simulation", col = "orange")
 
 # step 1
 # the theoretical mean should be 1/lambda = 5 
@@ -26,7 +29,7 @@ abline(v = mean_t, lwd = "1", col = "red")
 
 # step 2
 # the variance of exponential distribution is  (1/lambda) / sqrt(n).
-sd_s <- sd(means_exp) # sample standard deviation
+sd_s <- mean(var_exp)/n # sample standard deviation
 print(paste("standard deviation of sample:", sd_s))
 sd_t <- (1/lambda)/sqrt(n) # theoretical standard deviation
 print(paste("theoretical standard deviation:", sd_t))
@@ -41,3 +44,5 @@ x <- seq(min(means_exp), max(means_exp), length=n)
 y <- dnorm(x, mean=1/lambda, sd=(1/lambda)/sqrt(n)) # f(x)
 lines(x, y, pch=22, col="blue", lwd=3)
 
+qqnorm(means_exp)
+qqline(means_exp)
