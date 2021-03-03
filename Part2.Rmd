@@ -1,0 +1,119 @@
+---
+title: "Part2: Basic Inferential Data Analysis Instructions"
+output: html_document
+---
+## Intro
+To analyze the ToothGrowth data in the R datasets package.
+1. Load the ToothGrowth data and perform some basic exploratory data analyses
+2. Provide a basic summary of the data.
+3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+4. State your conclusions and the assumptions needed for your conclusions.
+```{r setup, include=FALSE, echo = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Step 1: load the ToothGrowth data
+
+```{r ToothGrowth }
+library(ggplot2)
+data(ToothGrowth)
+```
+
+## Step 2: Basic Summary of ToothGrowth 
+```{r summary}
+summary(ToothGrowth)
+str(ToothGrowth)
+head(ToothGrowth)
+```
+## Step 3: Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. 
+
+### Compare the mean and variance with different methods and applications
+```{r compare}
+# compare mean
+sapply(split(ToothGrowth$len, ToothGrowth$supp), mean)
+sapply(split(ToothGrowth$len, ToothGrowth$dose), mean)
+
+# compare variance
+sapply(split(ToothGrowth$len, ToothGrowth$supp), var)
+sapply(split(ToothGrowth$len, ToothGrowth$dose), var)
+
+p <- ggplot(aes(x = supp, y = len), data = ToothGrowth) 
+p <- p + geom_boxplot(aes(fill = factor(supp))) 
+P <- p + xlab("Supplement") 
+p <- p + ylab("Tooth Length [mm]") 
+P <- p + ggtitle("Tooth Length by Supplement") 
+p <- p + geom_point()
+p
+
+p0 <- ggplot(aes(x = dose, y = len), data = ToothGrowth) 
+p0 <- p0 + geom_boxplot(aes(fill = factor(dose))) 
+P0 <- p0 + xlab("Dosage") 
+p0 <- p0 + ylab("Tooth Length [mm]") 
+P0 <- p0 + ggtitle("Tooth Length by Dosage") 
+p0 <- p0 + geom_point()
+p0
+
+p1 <- ggplot(ToothGrowth, aes(x=dose, y=len)) 
+p1 <- p1 + geom_boxplot(aes(fill=factor(dose)))
+p1 <- p1 + geom_point()
+p1 <- p1 + facet_grid(.~supp)
+p1 <- p1 + ggtitle("Tooth Growth by Supplement & Dosage")
+p1 <- p1 + xlab("Supplement")
+p1 <- p1 + ylab("Tooth Length [mm]")
+p1
+
+p2 <- ggplot(ToothGrowth, aes(x=supp, y=len)) 
+p2 <- p2 + geom_boxplot(aes(fill=supp))
+p2 <- p2 + geom_point()
+p2 <- p2 + facet_grid(.~dose)
+p2 <- p2 + ggtitle("Tooth Growth by Dosage & Supplement")
+p2 <- p2 + xlab("Dosage")
+p2 <- p2 + ylab("Tooth Length [mm]")
+p2
+```
+
+### Detect the Inference by t - test 
+#### Test 1: test the difference of supplement
+Hypothesis:
+
+$H_0$: same mean of both supplements
+
+$H_a$: different means of both supplements
+```{r test1}
+t.test(len~supp,data=ToothGrowth)
+```
+#### Test 2: test the difference of Dosage level 0.5 and 1
+Hypothesis:
+
+$H_0$: same mean of both Dosage level 0.5 and 1
+
+$H_a$: different means of both Dosage level 0.5 and 1
+```{r test2}
+t.test(len~supp,data=subset(ToothGrowth, ToothGrowth$dose %in% c(0.5,1)))
+```
+#### Test 3: test the difference of Dosage level 0.5 and 2
+Hypothesis:
+
+$H_0$: same mean of both Dosage level 0.5 and 2
+
+$H_a$: different means of both Dosage level 0.5 and 2
+```{r test3}
+t.test(len~supp,data=subset(ToothGrowth,ToothGrowth$dose %in% c(0.5,2)))
+```
+#### Test 4: test the difference of Dosage level 1 and 2
+Hypothesis:
+
+$H_0$: same mean of both Dosage level 1 and 2
+
+$H_a$: different means of both Dosage level 1 and 2
+```{r test4}
+t.test(len~supp,data=subset(ToothGrowth, ToothGrowth$dose %in% c(1,2)))
+```
+## Step 4: Conclusion
+### Supplement Levels
+As for the supplement OJ and VS, the P-value is 0.06063.
+
+If we set the significant level as 0.05, we would reject the null hypothesis that both supplements have the same means. However, if we make our test not so strict, for example, we set the significant level as 0.1. We would not reject the null hypothesis that both supplements share same mean.
+
+### Dosage Levels
+As for the three dosage levels, we compare the mean difference two by two. All the 3 p-values are so small, which are not more than 0.001. So , we can conclude that the different dosage levels really achieve different effects on tooth growth. 
